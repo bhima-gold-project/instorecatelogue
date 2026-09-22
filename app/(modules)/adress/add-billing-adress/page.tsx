@@ -5,7 +5,7 @@ import useToggleState from "@/app/components/hook/useToggleState";
 const { Option } = Select;
 import { Font_20px, Font_24px } from "@/app/components/labels/page";
 import Modal from "@/app/components/medusamodal/page";
-import { indianStates } from "@/app/Data/page";
+import { indianStates } from "@/app/Data/data";
 import {
   customerLoginApi,
   customerRegistrationApi,
@@ -212,7 +212,7 @@ const AddBillingAddressButton = ({
     } else {
       console.log("Customer data update API is disabled from Admin Panel.");
     }
-    
+
     getCustomerData(data, erpcustomerdata[0]?.ID);
     closeModal();
   };
