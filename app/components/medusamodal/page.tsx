@@ -1,9 +1,8 @@
 import { Dialog, Transition } from "@headlessui/react"
-import { clx } from "@medusajs/ui"
+import clsx from "clsx"
 import React, { Fragment } from "react"
+import { X } from "lucide-react"
 
-
-import {X} from "lucide-react"
 import { ModalProvider, useModal } from "./modal"
 
 type ModalProps = {
@@ -16,7 +15,7 @@ type ModalProps = {
 }
 
 const Modal = ({
-  isOpen=false,
+  isOpen = false,
   close,
   size = "medium",
   search = false,
@@ -24,7 +23,7 @@ const Modal = ({
   position,
 }: ModalProps) => {
   return (
-    <Transition appear show={isOpen } as={Fragment}>
+    <Transition appear show={isOpen} as={Fragment}>
       <Dialog as="div" className="relative z-[75]" onClose={close}>
         <Transition.Child
           as={Fragment}
@@ -35,12 +34,12 @@ const Modal = ({
           leaveFrom="opacity-100"
           leaveTo="opacity-0"
         >
-          <div className="fixed inset-0 bg-opacity-75 backdrop-blur-md  h-screen" />
+          <div className="fixed inset-0 bg-opacity-75 backdrop-blur-md h-screen" />
         </Transition.Child>
 
         <div className="fixed inset-0 overflow-y-hidden">
           <div
-            className={clx(
+            className={clsx(
               "flex min-h-full h-full justify-center p-4 text-center",
               {
                 "items-center": !search,
@@ -58,7 +57,7 @@ const Modal = ({
               leaveTo="opacity-0 scale-95"
             >
               <Dialog.Panel
-                className={clx(
+                className={clsx(
                   "flex flex-col justify-start w-full transform p-5 text-left align-middle transition-all max-h-[175vh] h-fit",
                   {
                     "max-w-md": size === "small",
@@ -68,15 +67,17 @@ const Modal = ({
                     "bg-white shadow-xl border rounded-rounded": !search,
                     "fixed top-0 right-0 h-full justify-start items-start":
                       position === "right" && isOpen,
-                    hidden: !isOpen, // Hide when closed
+                    hidden: !isOpen,
                   }
                 )}
               >
                 <ModalProvider close={close}>
                   <div
-                    className={`overflow-y-auto ${
-                      position === "right" ? "h-full w-[100%]" : "max-h-[80vh]"
-                    }`}
+                    className={`overflow - y - auto ${
+  position === "right"
+    ? "h-full w-[100%]"
+    : "max-h-[80vh]"
+} `}
                   >
                     {children}
                   </div>
@@ -94,9 +95,10 @@ const Title: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { close } = useModal()
 
   return (
-    <Dialog.Title className="flex   items-center gap-x-28 justify-between">
+    <Dialog.Title className="flex items-center gap-x-28 justify-between">
       <div className="text-large-semi flex">{children}</div>
-      <div className="">
+
+      <div>
         <button onClick={close}>
           <X size={20} />
         </button>
@@ -105,7 +107,9 @@ const Title: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   )
 }
 
-const Description: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+const Description: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
   return (
     <Dialog.Description className="flex text-small-regular text-ui-fg-base items-center justify-center pt-2 pb-4 h-full">
       {children}
@@ -114,11 +118,15 @@ const Description: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 }
 
 const Body: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  return <div className="">{children}</div>
+  return <div>{children}</div>
 }
 
 const Footer: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  return <div className="flex items-center justify-end gap-x-4">{children}</div>
+  return (
+    <div className="flex items-center justify-end gap-x-4">
+      {children}
+    </div>
+  )
 }
 
 Modal.Title = Title
@@ -127,3 +135,4 @@ Modal.Body = Body
 Modal.Footer = Footer
 
 export default Modal
+

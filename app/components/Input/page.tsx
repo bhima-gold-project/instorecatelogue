@@ -1,8 +1,12 @@
-"use client"
-import { Label } from "@medusajs/ui"
-import { Eye, EyeOff } from "lucide-react"
-import React, { useEffect, useImperativeHandle, useState } from "react"
 
+"use client"
+
+import { Eye, EyeOff } from "lucide-react"
+import React, {
+  useEffect,
+  useImperativeHandle,
+  useState,
+} from "react"
 
 type InputProps = Omit<
   Omit<React.InputHTMLAttributes<HTMLInputElement>, "size">,
@@ -22,12 +26,10 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
     const [inputType, setInputType] = useState(type)
 
     useEffect(() => {
-      if (type === "password" && showPassword) {
-        setInputType("text")
-      }
-
-      if (type === "password" && !showPassword) {
-        setInputType("password")
+      if (type === "password") {
+        setInputType(showPassword ? "text" : "password")
+      } else {
+        setInputType(type)
       }
     }, [type, showPassword])
 
@@ -36,8 +38,11 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
     return (
       <div className="flex flex-col w-full">
         {topLabel && (
-          <Label className="mb-2 txt-compact-medium-plus">{topLabel}</Label>
+          <label className="mb-2 txt-compact-medium-plus">
+            {topLabel}
+          </label>
         )}
+
         <div className="flex relative z-0 w-full txt-compact-medium">
           <input
             type={inputType}
@@ -48,6 +53,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
             {...props}
             ref={inputRef}
           />
+
           <label
             htmlFor={name}
             onClick={() => inputRef.current?.focus()}
@@ -56,6 +62,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
             {label}
             {required && <span className="text-rose-500">*</span>}
           </label>
+
           {type === "password" && (
             <button
               type="button"
@@ -74,3 +81,4 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
 Input.displayName = "Input"
 
 export default Input
+
