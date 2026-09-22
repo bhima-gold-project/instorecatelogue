@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sign In — Instore Catalogue</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Marcellus&family=Jost:wght@300;400;500;600&display=swap');
+
+  :root{
+    --cream:#FBF7F1;
+    --paper:#FFFFFF;
+    --ink:#2A2420;
+    --ink-soft:#6B5F55;
+    --gold:#B8924F;
+    --gold-deep:#8C6B33;
+    --emerald:#3C5448;
+    --emerald-deep:#2B3E34;
+    --line: rgba(42,36,32,0.12);
+  }
+
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html,body{ height:100%; }
+  body{
+    font-family:'Jost', sans-serif;
+    color:var(--ink);
+    -webkit-font-smoothing:antialiased;
+    display:grid;
+    grid-template-columns: 1.05fr 1fr;
+    min-height:100vh;
+  }
+
+  /* ===== Left: brand panel ===== */
+  .brand-panel{
+    position:relative;
+    background: linear-gradient(160deg, var(--emerald) 0%, var(--emerald-deep) 100%);
+    color:#F4EFE6;
+    display:flex; flex-direction:column;
+    justify-content:space-between;
+    padding:48px;
+    overflow:hidden;
+  }
+  .brand-panel::before{
+    content:'';
+    position:absolute; inset:0;
+    background:
+      radial-gradient(circle at 15% 15%, rgba(255,255,255,0.07), transparent 40%),
+      radial-gradient(circle at 85% 75%, rgba(255,255,255,0.06), transparent 45%);
+  }
+  /* drifting gold motes */
+  .motes{ position:absolute; inset:0; overflow:hidden; }
+  .motes span{
+    position:absolute;
+    width:4px; height:4px;
+    border-radius:50%;
+    background: var(--gold);
+    opacity:0.5;
+    animation: drift 14s linear infinite;
+  }
+  .motes span:nth-child(1){ left:12%; top:80%; animation-duration:16s; animation-delay:0s; }
+  .motes span:nth-child(2){ left:30%; top:90%; animation-duration:12s; animation-delay:2s; }
+  .motes span:nth-child(3){ left:55%; top:85%; animation-duration:18s; animation-delay:1s; }
+  .motes span:nth-child(4){ left:72%; top:95%; animation-duration:14s; animation-delay:3.5s; }
+  .motes span:nth-child(5){ left:88%; top:80%; animation-duration:20s; animation-delay:0.5s; }
+  .motes span:nth-child(6){ left:45%; top:100%; animation-duration:15s; animation-delay:4s; }
+  @keyframes drift{
+    0%{ transform: translateY(0) translateX(0); opacity:0; }
+    10%{ opacity:0.6; }
+    90%{ opacity:0.4; }
+    100%{ transform: translateY(-110vh) translateX(20px); opacity:0; }
+  }
+
+  .brand-top{
+    position:relative; z-index:1;
+    display:flex; align-items:center; gap:12px;
+    font-family:'Marcellus', serif;
+    font-size:19px; letter-spacing:0.04em;
+    opacity:0;
+    animation: fadeIn 0.8s ease 0.1s forwards;
+  }
+  .brand-top .mark{
+    width:34px; height:34px; border-radius:50%;
+    background: conic-gradient(from 180deg, var(--gold), #E9C77B, var(--gold-deep), var(--gold));
+    display:flex; align-items:center; justify-content:center;
+    color:var(--emerald-deep);
+    font-family:'Marcellus', serif; font-size:14px;
+  }
+
+  .brand-mid{ position:relative; z-index:1; max-width:430px; }
+  .brand-mid .stars{
+    color:var(--gold); font-size:13px; letter-spacing:8px; margin-bottom:18px;
+    opacity:0; animation: fadeIn 0.8s ease 0.35s forwards;
+  }
+  .brand-mid h1{
+    font-family:'Cormorant Garamond', serif;
+    font-weight:600; font-size:48px; line-height:1.15;
+    opacity:0; animation: fadeIn 0.8s ease 0.5s forwards;
+  }
+  .brand-mid p{
+    font-family:'Cormorant Garamond', serif;
+    font-size:19px; color:#D9D4C7;
+    margin-top:18px; max-width:360px; line-height:1.5;
+    opacity:0; animation: fadeIn 0.8s ease 0.65s forwards;
+  }
+  @keyframes fadeIn{
+    from{ opacity:0; transform:translateY(14px); }
+    to{ opacity:1; transform:translateY(0); }
+  }
+
+  .brand-bottom{
+    position:relative; z-index:1;
+    display:flex; gap:34px;
+    opacity:0; animation: fadeIn 0.8s ease 0.85s forwards;
+  }
+  .stat .num{ font-family:'Cormorant Garamond', serif; font-size:26px; font-weight:700; color:var(--gold); }
+  .stat .lbl{ font-size:11px; letter-spacing:0.06em; text-transform:uppercase; color:#B9C2BB; margin-top:4px; }
+
+  /* ===== Right: form ===== */
+  .form-panel{
+    background:var(--cream);
+    display:flex; align-items:center; justify-content:center;
+    padding:40px;
+  }
+  .form-card{
+    width:100%; max-width:380px;
+    opacity:0; transform:translateY(18px);
+    animation: cardIn 0.7s cubic-bezier(.2,.8,.2,1) 0.15s forwards;
+  }
+  @keyframes cardIn{ to{ opacity:1; transform:translateY(0); } }
+
+  .form-card .eyebrow{
+    font-size:11px; letter-spacing:0.16em; text-transform:uppercase;
+    color:var(--gold-deep); font-weight:500; margin-bottom:10px;
+  }
+  .form-card h2{
+    font-family:'Cormorant Garamond', serif;
+    font-weight:700; font-size:32px;
+    margin-bottom:8px;
+    position:relative; padding-bottom:10px;
+  }
+  .form-card h2::after{
+    content:''; position:absolute; left:0; bottom:0; width:46px; height:2px; background:var(--gold);
+  }
+  .form-card .sub{
+    color:var(--ink-soft); font-size:14px; margin-bottom:30px;
+  }
+
+  .field{ position:relative; margin-bottom:18px; }
+  .field input{
+    width:100%;
+    background: var(--paper);
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:18px 14px 8px;
+    color:var(--ink);
+    font-family:'Jost', sans-serif;
+    font-size:14.5px;
+    outline:none;
+    transition: border-color 0.25s ease, box-shadow 0.25s ease;
+  }
+  .field input:focus{
+    border-color: var(--gold);
+    box-shadow: 0 0 0 3px rgba(184,146,79,0.12);
+  }
+  .field label{
+    position:absolute; left:14px; top:16px;
+    color:var(--ink-soft); font-size:14.5px;
+    pointer-events:none; transition: all 0.18s ease;
+  }
+  .field input:focus + label,
+  .field input:not(:placeholder-shown) + label{
+    top:6.5px; font-size:10px; letter-spacing:0.05em; text-transform:uppercase;
+    color: var(--gold-deep); font-weight:500;
+  }
+  .field .icon{
+    position:absolute; right:14px; top:18px;
+    width:17px; height:17px; color:var(--ink-soft);
+    cursor:pointer;
+  }
+
+  .row{
+    display:flex; align-items:center; justify-content:space-between;
+    margin:-2px 0 24px;
+    font-size:13px;
+  }
+  .remember{ display:flex; align-items:center; gap:8px; color:var(--ink-soft); }
+  .remember input{ accent-color: var(--gold-deep); width:14px; height:14px; }
+  .row a{ color:var(--ink-soft); text-decoration:none; border-bottom:1px solid var(--line); transition: color 0.2s ease, border-color 0.2s ease; }
+  .row a:hover{ color:var(--gold-deep); border-color:var(--gold-deep); }
+
+  .login-btn{
+    width:100%;
+    border:none; border-radius:10px;
+    padding:15px;
+    background: linear-gradient(100deg, var(--emerald), var(--emerald-deep));
+    color:#F4EFE6;
+    font-family:'Jost', sans-serif;
+    font-size:14px; font-weight:600; letter-spacing:0.07em; text-transform:uppercase;
+    cursor:pointer;
+    position:relative; overflow:hidden;
+    transition: transform 0.15s ease, box-shadow 0.25s ease;
+    box-shadow: 0 16px 30px -16px rgba(43,62,52,0.55);
+  }
+  .login-btn:hover{ transform:translateY(-2px); box-shadow:0 20px 36px -14px rgba(184,146,79,0.45); }
+  .login-btn:active{ transform:translateY(0) scale(0.99); }
+  .login-btn::before{
+    content:''; position:absolute; top:0; left:-60%; width:35%; height:100%;
+    background: linear-gradient(120deg, transparent, rgba(255,255,255,0.35), transparent);
+    transform: skewX(-20deg);
+    animation: shimmer 3.4s ease-in-out infinite;
+  }
+  @keyframes shimmer{ 0%{ left:-60%; } 50%{ left:130%; } 100%{ left:130%; } }
+
+  .divider{
+    display:flex; align-items:center; gap:12px;
+    margin:26px 0 20px;
+    color:var(--ink-soft);
+    font-size:10.5px; text-transform:uppercase; letter-spacing:0.12em;
+  }
+  .divider::before, .divider::after{ content:''; flex:1; height:1px; background:var(--line); }
+
+  .footer{ text-align:center; font-size:13.5px; color:var(--ink-soft); }
+  .footer a{ color: var(--gold-deep); text-decoration:none; font-weight:500; }
+  .footer a:hover{ text-decoration:underline; }
+
+  @media (max-width: 880px){
+    body{ grid-template-columns:1fr; }
+    .brand-panel{ display:none; }
+  }
+</style>
+</head>
+<body>
+
+  <div class="brand-panel">
+    <div class="motes"><span></span><span></span><span></span><span></span><span></span><span></span></div>
+
+    <div class="brand-top">
+      <span class="mark">IC</span> Instore Catalogue
+    </div>
+
+    <div class="brand-mid">
+      <div class="stars">· · · ✦ ✦ ✦ ✦ · ·</div>
+      <h1>Happy Moments,<br>Timeless Creations.</h1>
+      <p>Sign in to browse the full collection, manage orders, and build your store's catalogue.</p>
+    </div>
+
+    <div class="brand-bottom">
+      <div class="stat"><div class="num">12K+</div><div class="lbl">Products</div></div>
+      <div class="stat"><div class="num">40+</div><div class="lbl">Branches</div></div>
+      <div class="stat"><div class="num">99.9%</div><div class="lbl">Uptime</div></div>
+    </div>
+  </div>
+
+  <div class="form-panel">
+    <div class="form-card">
+      <p class="eyebrow">Welcome Back</p>
+      <h2>Sign in to your account</h2>
+      <p class="sub">Enter your credentials to access the catalogue.</p>
+
+      <form id="loginForm">
+        <div class="field">
+          <input type="text" id="username" placeholder=" " autocomplete="username" required>
+          <label for="username">Username</label>
+        </div>
+
+        <div class="field">
+          <input type="password" id="password" placeholder=" " autocomplete="current-password" required>
+          <label for="password">Password</label>
+          <svg class="icon" id="togglePw" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7Z"/><circle cx="12" cy="12" r="3"/>
+          </svg>
+        </div>
+
+        <div class="row">
+          <label class="remember"><input type="checkbox"> Remember me</label>
+          <a href="#">Forgot password?</a>
+        </div>
+
+        <button type="submit" class="login-btn">Log In</button>
+      </form>
+
+      <div class="divider">or</div>
+
+      <p class="footer">New here? <a href="#">Request store access</a></p>
+    </div>
+  </div>
+
+<script>
+  document.getElementById('loginForm').addEventListener('submit', function(e){
+    e.preventDefault();
+    const btn = document.querySelector('.login-btn');
+    const original = btn.textContent;
+    btn.textContent = 'Signing in…';
+    btn.style.opacity = '0.85';
+    setTimeout(()=>{ btn.textContent = original; btn.style.opacity = '1'; }, 1400);
+  });
+
+  const pwField = document.getElementById('password');
+  document.getElementById('togglePw').addEventListener('click', function(){
+    pwField.type = pwField.type === 'password' ? 'text' : 'password';
+  });
+</script>
+
+</body>
+</html>

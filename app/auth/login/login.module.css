@@ -1,0 +1,466 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Marcellus&family=Jost:wght@300;400;500;600&display=swap');
+
+.loginPage {
+  --cream: #FBF7F1;
+  --paper: #FFFFFF;
+  --ink: #2A2420;
+  --ink-soft: #6B5F55;
+  --gold: #B8924F;
+  --gold-deep: #8C6B33;
+  --emerald: #3C5448;
+  --emerald-deep: #2B3E34;
+  --line: rgba(42, 36, 32, 0.12);
+
+  font-family: 'Jost', sans-serif;
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+}
+
+.cormorant {
+  font-family: 'Cormorant Garamond', serif;
+}
+
+.marcellus {
+  font-family: 'Marcellus', serif;
+}
+
+.jost {
+  font-family: 'Jost', sans-serif;
+}
+
+/* ===== Left: brand panel motes and drift ===== */
+.motes {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.motes span {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--gold);
+  opacity: 0.5;
+  animation: drift 14s linear infinite;
+}
+
+.motes span:nth-child(1) {
+  left: 12%;
+  top: 80%;
+  animation-duration: 16s;
+  animation-delay: 0s;
+}
+
+.motes span:nth-child(2) {
+  left: 30%;
+  top: 90%;
+  animation-duration: 12s;
+  animation-delay: 2s;
+}
+
+.motes span:nth-child(3) {
+  left: 55%;
+  top: 85%;
+  animation-duration: 18s;
+  animation-delay: 1s;
+}
+
+.motes span:nth-child(4) {
+  left: 72%;
+  top: 95%;
+  animation-duration: 14s;
+  animation-delay: 3.5s;
+}
+
+.motes span:nth-child(5) {
+  left: 88%;
+  top: 80%;
+  animation-duration: 20s;
+  animation-delay: 0.5s;
+}
+
+.motes span:nth-child(6) {
+  left: 45%;
+  top: 100%;
+  animation-duration: 15s;
+  animation-delay: 4s;
+}
+
+@keyframes drift {
+  0% {
+    transform: translateY(0) translateX(0);
+    opacity: 0;
+  }
+
+  10% {
+    opacity: 0.6;
+  }
+
+  90% {
+    opacity: 0.4;
+  }
+
+  100% {
+    transform: translateY(-110vh) translateX(20px);
+    opacity: 0;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fadeIn1 {
+  opacity: 0;
+  animation: fadeIn 0.8s ease 0.1s forwards;
+}
+
+.fadeIn2 {
+  opacity: 0;
+  animation: fadeIn 0.8s ease 0.35s forwards;
+}
+
+.fadeIn3 {
+  opacity: 0;
+  animation: fadeIn 0.8s ease 0.5s forwards;
+}
+
+.fadeIn4 {
+  opacity: 0;
+  animation: fadeIn 0.8s ease 0.65s forwards;
+}
+
+.fadeIn5 {
+  opacity: 0;
+  animation: fadeIn 0.8s ease 0.85s forwards;
+}
+
+.animateCardIn {
+  opacity: 0;
+  transform: translateY(18px);
+  animation: cardIn 0.7s cubic-bezier(.2, .8, .2, 1) 0.15s forwards;
+}
+
+@keyframes cardIn {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.field {
+  position: relative;
+  margin-bottom: 18px;
+  width: 100%;
+}
+
+.fieldIcon {
+  position: absolute;
+  right: 14px;
+  top: 18px;
+  width: 17px;
+  height: 17px;
+  color: var(--ink-soft);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  padding: 0;
+  outline: none;
+  transition: color 0.2s ease;
+}
+
+.fieldIcon:hover {
+  color: var(--gold);
+}
+
+.field input {
+  width: 100%;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 18px 14px 8px;
+  color: var(--ink);
+  font-family: 'Jost', sans-serif;
+  font-size: 14.5px;
+  outline: none;
+  transition: border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.field input.passwordInput {
+  padding-right: 42px;
+}
+
+.field input:-webkit-autofill,
+.field input:-webkit-autofill:hover,
+.field input:-webkit-autofill:focus {
+  -webkit-text-fill-color: var(--ink);
+  -webkit-box-shadow: 0 0 0px 1000px var(--paper) inset;
+  transition: background-color 5000s ease-in-out 0s;
+}
+
+.field input:focus {
+  border-color: var(--gold);
+  box-shadow: 0 0 0 3px rgba(184, 146, 79, 0.12);
+}
+
+.field label {
+  position: absolute;
+  left: 14px;
+  top: 16px;
+  color: var(--ink-soft);
+  font-size: 14.5px;
+  pointer-events: none;
+  transition: all 0.18s ease;
+}
+
+.field input:focus+label,
+.field inputInputLabelActive+label,
+.field input:not(:placeholder-shown)+label {
+  top: 6.5px;
+  font-size: 10px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--gold-deep);
+  font-weight: 500;
+}
+
+/* Button with shimmer and transition */
+.loginBtn {
+  width: 100%;
+  border: none;
+  border-radius: 10px;
+  padding: 15px;
+  background: linear-gradient(100deg, var(--emerald), var(--emerald-deep));
+  color: #F4EFE6;
+  font-family: 'Jost', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.15s ease, box-shadow 0.25s ease;
+  box-shadow: 0 16px 30px -16px rgba(43, 62, 52, 0.55);
+}
+
+.loginBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 20px 36px -14px rgba(184, 146, 79, 0.45);
+}
+
+.loginBtn:active {
+  transform: translateY(0) scale(0.99);
+}
+
+.loginBtn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -60%;
+  width: 35%;
+  height: 100%;
+  background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.35), transparent);
+  transform: skewX(-20deg);
+  animation: shimmer 3.4s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    left: -60%;
+  }
+
+  50% {
+    left: 130%;
+  }
+
+  100% {
+    left: 130%;
+  }
+}
+
+.loginBtnDisabled {
+  background: #ccc !important;
+  cursor: not-allowed;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+.loginBtnDisabled::before {
+  animation: none !important;
+  display: none !important;
+}
+
+/* Hide number spin/up-down arrows to match layout */
+.field input::-webkit-outer-spin-button,
+.field input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.field input[type=number] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+/* ===== OTP Specific UI Styles ===== */
+.otpCard {
+  animation: cardIn 0.5s cubic-bezier(.2, .8, .2, 1) forwards;
+}
+
+.otpBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  background: rgba(184, 146, 79, 0.12);
+  border: 1px solid rgba(184, 146, 79, 0.3);
+  border-radius: 20px;
+  color: var(--gold-deep);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+
+.otpInfoCard {
+  background: #F4EFE6;
+  border: 1px solid rgba(42, 36, 32, 0.08);
+  border-radius: 12px;
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 22px;
+}
+
+.otpInfoIcon {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, var(--emerald), var(--emerald-deep));
+  color: #F4EFE6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.otpInfoText {
+  font-size: 13px;
+  color: var(--ink);
+  line-height: 1.4;
+}
+
+.otpInfoHighlight {
+  font-weight: 600;
+  color: var(--emerald-deep);
+  font-size: 13.5px;
+}
+
+.otpInputsGrid {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin-bottom: 22px;
+}
+
+.otpDigitInput {
+  width: 52px;
+  height: 58px;
+  text-align: center;
+  font-size: 24px;
+  font-weight: 700;
+  font-family: 'Jost', sans-serif;
+  color: var(--emerald-deep);
+  background: var(--paper);
+  border: 1.5px solid var(--line);
+  border-radius: 12px;
+  outline: none;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.03);
+}
+
+.otpDigitInput:focus {
+  border-color: var(--gold);
+  background: #FFFDF9;
+  box-shadow: 0 0 0 3px rgba(184, 146, 79, 0.2);
+  transform: translateY(-2px);
+}
+
+.otpDigitInputFilled {
+  border-color: var(--emerald);
+  background: #F9FAF8;
+}
+
+.otpActions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  font-size: 13px;
+}
+
+.otpTimerText {
+  color: var(--ink-soft);
+  font-size: 12.5px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.otpResendBtn {
+  background: none;
+  border: none;
+  color: var(--gold-deep);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+  transition: color 0.15s ease, opacity 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.otpResendBtn:hover:not(:disabled) {
+  color: var(--emerald);
+  text-decoration: underline;
+}
+
+.otpResendBtn:disabled {
+  color: #A0988E;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.backToLoginBtn {
+  background: none;
+  border: none;
+  color: var(--ink-soft);
+  font-size: 13.5px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: color 0.15s ease;
+  padding: 8px 0;
+}
+
+.backToLoginBtn:hover {
+  color: var(--gold-deep);
+}

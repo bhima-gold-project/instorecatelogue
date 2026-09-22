@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kanas — Instore Catalogue</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Marcellus&family=Jost:wght@300;400;500;600&display=swap');
+
+  :root{
+    --cream:#FBF7F1;
+    --paper:#FFFFFF;
+    --ink:#2A2420;
+    --ink-soft:#6B5F55;
+    --gold:#B8924F;
+    --gold-deep:#8C6B33;
+    --emerald:#3C5448;
+    --emerald-deep:#2B3E34;
+    --line: rgba(42,36,32,0.1);
+    --green: #4F8A6D;
+  }
+
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{
+    background:var(--cream);
+    color:var(--ink);
+    font-family:'Jost', sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  /* ===== header ===== */
+  header{
+    position:sticky; top:0; z-index:50;
+    background: var(--paper);
+    border-bottom:1px solid var(--line);
+    display:flex; align-items:center; justify-content:space-between;
+    padding:16px 36px;
+  }
+  .brand{
+    font-family:'Marcellus', serif; font-size:20px; letter-spacing:0.04em;
+    display:flex; align-items:center; gap:10px;
+  }
+  .brand .mark{
+    width:30px; height:30px; border-radius:50%;
+    background: conic-gradient(from 180deg, var(--gold), #E9C77B, var(--gold-deep), var(--gold));
+    display:flex; align-items:center; justify-content:center; color:var(--paper);
+    font-family:'Marcellus', serif; font-size:13px;
+  }
+  .search{ flex:1; max-width:420px; margin:0 40px; position:relative; }
+  .search input{
+    width:100%; padding:11px 44px 11px 18px; border-radius:999px;
+    border:1px solid var(--line); background:var(--cream);
+    font-size:13.5px; color:var(--ink); outline:none;
+    transition: border-color 0.25s ease, box-shadow 0.25s ease;
+  }
+  .search input:focus{ border-color: var(--gold); box-shadow: 0 0 0 3px rgba(184,146,79,0.12); }
+  .search button{
+    position:absolute; right:5px; top:50%; transform:translateY(-50%);
+    width:32px; height:32px; border:none; border-radius:50%;
+    background: var(--emerald); color:#fff; cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+    transition: background 0.2s ease, transform 0.2s ease;
+  }
+  .search button:hover{ background:var(--gold-deep); transform:translateY(-50%) scale(1.06); }
+  .search svg{ width:14px; height:14px; }
+  nav.actions{ display:flex; align-items:center; gap:26px; }
+  .nav-item{
+    display:flex; flex-direction:column; align-items:center; gap:4px; position:relative;
+    color:var(--ink-soft); text-decoration:none; font-size:11px; letter-spacing:0.03em; cursor:pointer;
+    transition: color 0.2s ease;
+  }
+  .nav-item:hover{ color:var(--gold-deep); }
+  .nav-item svg{ width:19px; height:19px; stroke:currentColor; transition:transform 0.2s ease; }
+  .nav-item:hover svg{ transform:translateY(-2px); }
+  .badge{
+    position:absolute; top:-6px; right:-9px; background: var(--gold-deep); color:#fff;
+    font-size:9.5px; font-weight:600; width:16px; height:16px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+  }
+
+  /* ===== breadcrumb ===== */
+  .breadcrumb-wrap{ padding:18px 36px 0; }
+  .breadcrumb{
+    display:inline-flex; align-items:center; gap:7px;
+    background:var(--paper); border:1px solid var(--line);
+    padding:8px 16px; border-radius:999px; font-size:12.5px; color:var(--ink-soft);
+  }
+  .breadcrumb svg{ width:13px; height:13px; }
+  .breadcrumb .sep{ color:var(--line); }
+  .breadcrumb .current{ color:var(--gold-deep); font-weight:500; }
+
+  /* ===== layout ===== */
+  .product-wrap{
+    display:grid;
+    grid-template-columns: 1.05fr 1fr;
+    gap:34px;
+    padding:26px 36px 70px;
+    align-items:start;
+  }
+
+  /* ===== gallery ===== */
+  .gallery{
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-radius:16px;
+    overflow:hidden;
+    box-shadow:0 20px 40px -26px rgba(42,36,32,0.3);
+    opacity:0; transform:translateY(16px);
+    animation: rise 0.6s ease forwards;
+  }
+  @keyframes rise{ to{ opacity:1; transform:translateY(0); } }
+
+  .gallery-head{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:14px 18px;
+    border-bottom:1px solid var(--line);
+  }
+  .gallery-head .dkn{
+    font-family:'Cormorant Garamond', serif;
+    font-weight:700; font-size:16px; letter-spacing:0.04em;
+  }
+  .stock{
+    display:flex; align-items:center; gap:6px;
+    font-size:12.5px; color:var(--green); font-weight:500;
+  }
+  .stock .dot{
+    width:7px; height:7px; border-radius:50%; background:var(--green);
+    box-shadow:0 0 0 0 rgba(79,138,109,0.5);
+    animation: stockPulse 2s infinite;
+  }
+  @keyframes stockPulse{
+    0%{ box-shadow:0 0 0 0 rgba(79,138,109,0.45); }
+    70%{ box-shadow:0 0 0 8px rgba(79,138,109,0); }
+    100%{ box-shadow:0 0 0 0 rgba(79,138,109,0); }
+  }
+
+  .gallery-body{
+    position:relative;
+    height:420px;
+    display:flex; align-items:center; justify-content:center;
+    background: radial-gradient(circle at 50% 45%, #fdfcfa, #f3f0ea);
+  }
+  .gallery-body img{
+    max-height:78%;
+    max-width:70%;
+    object-fit:contain;
+    filter: drop-shadow(0 18px 26px rgba(42,36,32,0.18));
+    transition: transform 0.5s ease, opacity 0.35s ease;
+  }
+  .gnav{
+    position:absolute; top:50%; transform:translateY(-50%);
+    width:38px; height:38px; border-radius:50%;
+    background:var(--paper); border:1px solid var(--line);
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer; color:var(--ink);
+    transition: background 0.2s ease, transform 0.2s ease, border-color 0.2s ease;
+  }
+  .gnav:hover{ background:var(--emerald); color:#fff; border-color:var(--emerald); transform:translateY(-50%) scale(1.06); }
+  .gnav.prev{ left:16px; } .gnav.next{ right:16px; }
+  .gnav svg{ width:16px; height:16px; }
+
+  .thumbs{
+    display:flex; gap:10px; padding:14px 18px; border-top:1px solid var(--line);
+  }
+  .thumbs span{
+    width:54px; height:54px; border-radius:8px;
+    border:1px solid var(--line);
+    background:#f6f4ef;
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer; transition: border-color 0.2s ease;
+    overflow:hidden;
+  }
+  .thumbs span.active{ border-color:var(--gold); }
+  .thumbs img{ width:80%; height:80%; object-fit:contain; }
+
+  /* ===== details panel ===== */
+  .details{
+    opacity:0; transform:translateY(16px);
+    animation: rise 0.6s ease 0.1s forwards;
+  }
+  .title-row h1{
+    font-family:'Cormorant Garamond', serif;
+    font-weight:700; font-size:34px;
+    letter-spacing:0.02em;
+    margin-bottom:6px;
+  }
+  .title-row .stars{ color:var(--gold); font-size:13px; letter-spacing:2px; margin-bottom:18px; }
+
+  .panel{
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:22px 24px;
+    margin-bottom:18px;
+  }
+  .panel h3{
+    font-family:'Cormorant Garamond', serif;
+    font-size:19px; font-weight:600;
+    margin-bottom:14px;
+    color:var(--ink);
+    position:relative; padding-bottom:8px;
+  }
+  .panel h3::after{
+    content:''; position:absolute; left:0; bottom:0; width:30px; height:2px; background:var(--gold);
+  }
+
+  .spec-grid{
+    display:grid;
+    grid-template-columns: 1fr 1fr;
+    gap:12px 18px;
+  }
+  .spec{ font-size:13.5px; display:flex; justify-content:space-between; border-bottom:1px dashed var(--line); padding-bottom:8px; }
+  .spec .k{ color:var(--ink-soft); }
+  .spec .v{ font-weight:500; color:var(--ink); }
+
+  table.metal{
+    width:100%; border-collapse:collapse; font-size:13.5px;
+  }
+  table.metal th{
+    text-align:left; padding:9px 6px; color:var(--ink-soft);
+    font-weight:500; font-size:11.5px; letter-spacing:0.04em; text-transform:uppercase;
+    border-bottom:1px solid var(--line);
+  }
+  table.metal td{
+    padding:11px 6px; border-bottom:1px solid var(--line);
+  }
+  table.metal tr:last-child td{ border-bottom:none; }
+  table.metal td:nth-child(1){ color: var(--gold-deep); font-weight:500; }
+  table.metal td:nth-child(2), table.metal td:nth-child(3), table.metal td:nth-child(4){ text-align:right; }
+
+  .totals{ margin-top:16px; }
+  .trow{
+    display:flex; justify-content:space-between;
+    font-size:13.5px; padding:7px 0; color:var(--ink-soft);
+  }
+  .trow.grand{
+    border-top:1px solid var(--line);
+    margin-top:6px; padding-top:14px;
+    font-family:'Cormorant Garamond', serif;
+    font-size:23px; font-weight:700; color:var(--ink);
+  }
+  .trow.grand .v{ color: var(--gold-deep); }
+
+  .add-cart{
+    width:100%;
+    border:none; border-radius:10px;
+    padding:16px;
+    margin-top:6px;
+    background: linear-gradient(100deg, var(--emerald), var(--emerald-deep));
+    color:#F4EFE6;
+    font-family:'Jost', sans-serif;
+    font-size:14px; font-weight:600; letter-spacing:0.08em; text-transform:uppercase;
+    display:flex; align-items:center; justify-content:center; gap:10px;
+    cursor:pointer;
+    position:relative; overflow:hidden;
+    transition: transform 0.15s ease, box-shadow 0.25s ease;
+    box-shadow:0 16px 30px -16px rgba(43,62,52,0.55);
+  }
+  .add-cart:hover{ transform:translateY(-2px); box-shadow:0 20px 36px -14px rgba(184,146,79,0.45); }
+  .add-cart:active{ transform:translateY(0) scale(0.99); }
+  .add-cart svg{ width:17px; height:17px; }
+  .add-cart::before{
+    content:''; position:absolute; top:0; left:-60%; width:35%; height:100%;
+    background: linear-gradient(120deg, transparent, rgba(255,255,255,0.35), transparent);
+    transform: skewX(-20deg);
+    animation: shimmer 3.4s ease-in-out infinite;
+  }
+  @keyframes shimmer{
+    0%{ left:-60%; } 50%{ left:130%; } 100%{ left:130%; }
+  }
+
+  @media (max-width: 920px){
+    .product-wrap{ grid-template-columns:1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand"><span class="mark">IC</span> Instore Catalogue</div>
+  <div class="search">
+    <input type="text" placeholder="Search Product…">
+    <button aria-label="search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 12h13M14 6l6 6-6 6"/></svg></button>
+  </div>
+  <nav class="actions">
+    <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="3.2"/><path d="M5 20c1.2-4 4-6 7-6s5.8 2 7 6"/></svg>DKN</a>
+    <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="20" r="1.3"/><circle cx="18" cy="20" r="1.3"/><path d="M2 3h2l2.4 12.2a2 2 0 0 0 2 1.6h8.6a2 2 0 0 0 2-1.6L21 7H6"/></svg>Cart<span class="badge">8</span></a>
+    <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 8 12 3 3 8l9 5 9-5Z"/><path d="M3 8v8l9 5 9-5V8"/><path d="M12 13v8"/></svg>Orders</a>
+    <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg>Logout</a>
+  </nav>
+</header>
+
+<div class="breadcrumb-wrap">
+  <div class="breadcrumb">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/></svg>
+    Home <span class="sep">›</span> Bangle <span class="sep">›</span> <span class="current">Kanas</span>
+  </div>
+</div>
+
+<div class="product-wrap">
+
+  <!-- Gallery -->
+  <div class="gallery">
+    <div class="gallery-head">
+      <span class="dkn">DKN</span>
+      <span class="stock"><span class="dot"></span>In Stock</span>
+    </div>
+    <div class="gallery-body">
+      <div class="gnav prev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg></div>
+      <img id="mainImg" src="https://images.unsplash.com/photo-1611652022419-a9419f74343d?q=80&w=700&auto=format&fit=crop" alt="Kanas bangle">
+      <div class="gnav next"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg></div>
+    </div>
+    <div class="thumbs">
+      <span class="active"><img src="https://images.unsplash.com/photo-1611652022419-a9419f74343d?q=80&w=200&auto=format&fit=crop"></span>
+      <span><img src="https://images.unsplash.com/photo-1611591437281-460bfbe1220a?q=80&w=200&auto=format&fit=crop"></span>
+      <span><img src="https://images.unsplash.com/photo-1610375461246-83df859d849d?q=80&w=200&auto=format&fit=crop"></span>
+    </div>
+  </div>
+
+  <!-- Details -->
+  <div class="details">
+    <div class="title-row">
+      <h1>Kanas</h1>
+      <div class="stars">✦ ✦ ✦ ✦ ✦</div>
+    </div>
+
+    <div class="panel">
+      <h3>Product Details</h3>
+      <div class="spec-grid">
+        <div class="spec"><span class="k">SKU</span><span class="v">43232911</span></div>
+        <div class="spec"><span class="k">Metal</span><span class="v">Gold</span></div>
+        <div class="spec"><span class="k">Gross Weight</span><span class="v">11.5 g</span></div>
+        <div class="spec"><span class="k">Purity</span><span class="v">22K</span></div>
+        <div class="spec"><span class="k">Net Weight</span><span class="v">11.5 g</span></div>
+        <div class="spec"><span class="k">Metal Rate</span><span class="v">₹14,000</span></div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h3>Metal Details</h3>
+      <table class="metal">
+        <thead>
+          <tr><th>Component</th><th>Rate</th><th>Weight</th><th>Value</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Gold</td><td>₹14,000</td><td>11.5</td><td>₹1,61,000.00</td></tr>
+          <tr><td>Making Charges</td><td>–</td><td>–</td><td>₹26,162.50</td></tr>
+        </tbody>
+      </table>
+
+      <div class="totals">
+        <div class="trow"><span>Sub Total</span><span>₹1,87,162.50</span></div>
+        <div class="trow"><span>GST</span><span>₹5,614.88</span></div>
+        <div class="trow grand"><span>Grand Total</span><span class="v">₹1,92,777.38</span></div>
+      </div>
+
+      <button class="add-cart">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="20" r="1.3"/><circle cx="18" cy="20" r="1.3"/><path d="M2 3h2l2.4 12.2a2 2 0 0 0 2 1.6h8.6a2 2 0 0 0 2-1.6L21 7H6"/></svg>
+        Add to Cart
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const images = [
+    "https://images.unsplash.com/photo-1611652022419-a9419f74343d?q=80&w=700&auto=format&fit=crop",
+    "https://images.unsplash.com/photo-1611591437281-460bfbe1220a?q=80&w=700&auto=format&fit=crop",
+    "https://images.unsplash.com/photo-1610375461246-83df859d849d?q=80&w=700&auto=format&fit=crop"
+  ];
+  let idx = 0;
+  const mainImg = document.getElementById('mainImg');
+  const thumbs = document.querySelectorAll('.thumbs span');
+
+  function setImage(i){
+    idx = (i + images.length) % images.length;
+    mainImg.style.opacity = 0;
+    setTimeout(()=>{
+      mainImg.src = images[idx];
+      mainImg.style.opacity = 1;
+    }, 180);
+    thumbs.forEach((t,n)=> t.classList.toggle('active', n===idx));
+  }
+
+  document.querySelector('.gnav.prev').addEventListener('click', ()=> setImage(idx-1));
+  document.querySelector('.gnav.next').addEventListener('click', ()=> setImage(idx+1));
+  thumbs.forEach((t,n)=> t.addEventListener('click', ()=> setImage(n)));
+
+  document.querySelector('.add-cart').addEventListener('click', function(){
+    const btn = this;
+    const original = btn.innerHTML;
+    btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg> Added to Cart';
+    setTimeout(()=>{ btn.innerHTML = original; }, 1600);
+  });
+</script>
+
+</body>
+</html>

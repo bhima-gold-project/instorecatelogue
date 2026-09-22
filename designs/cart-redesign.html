@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shopping Cart — Instore Catalogue</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Marcellus&family=Jost:wght@300;400;500;600&display=swap');
+
+  :root{
+    --cream:#FBF7F1;
+    --paper:#FFFFFF;
+    --ink:#2A2420;
+    --ink-soft:#6B5F55;
+    --gold:#B8924F;
+    --gold-deep:#8C6B33;
+    --emerald:#3C5448;
+    --emerald-deep:#2B3E34;
+    --line: rgba(42,36,32,0.1);
+    --red: #C25450;
+    --red-bg: #FBEAE9;
+  }
+
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{
+    background:var(--cream);
+    color:var(--ink);
+    font-family:'Jost', sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  /* ===== header ===== */
+  header{
+    position:sticky; top:0; z-index:50;
+    background: var(--paper);
+    border-bottom:1px solid var(--line);
+    display:flex; align-items:center; justify-content:space-between;
+    padding:16px 36px;
+  }
+  .brand{
+    font-family:'Marcellus', serif; font-size:20px; letter-spacing:0.04em;
+    display:flex; align-items:center; gap:10px;
+  }
+  .brand .mark{
+    width:30px; height:30px; border-radius:50%;
+    background: conic-gradient(from 180deg, var(--gold), #E9C77B, var(--gold-deep), var(--gold));
+    display:flex; align-items:center; justify-content:center; color:var(--paper);
+    font-family:'Marcellus', serif; font-size:13px;
+  }
+  .search{ flex:1; max-width:420px; margin:0 40px; position:relative; }
+  .search input{
+    width:100%; padding:11px 44px 11px 18px; border-radius:999px;
+    border:1px solid var(--line); background:var(--cream);
+    font-size:13.5px; color:var(--ink); outline:none;
+    transition: border-color 0.25s ease, box-shadow 0.25s ease;
+  }
+  .search input:focus{ border-color: var(--gold); box-shadow: 0 0 0 3px rgba(184,146,79,0.12); }
+  .search button{
+    position:absolute; right:5px; top:50%; transform:translateY(-50%);
+    width:32px; height:32px; border:none; border-radius:50%;
+    background: var(--emerald); color:#fff; cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+    transition: background 0.2s ease, transform 0.2s ease;
+  }
+  .search button:hover{ background:var(--gold-deep); transform:translateY(-50%) scale(1.06); }
+  .search svg{ width:14px; height:14px; }
+  nav.actions{ display:flex; align-items:center; gap:26px; }
+  .nav-item{
+    display:flex; flex-direction:column; align-items:center; gap:4px; position:relative;
+    color:var(--ink-soft); text-decoration:none; font-size:11px; letter-spacing:0.03em; cursor:pointer;
+    transition: color 0.2s ease;
+  }
+  .nav-item:hover{ color:var(--gold-deep); }
+  .nav-item svg{ width:19px; height:19px; stroke:currentColor; transition:transform 0.2s ease; }
+  .nav-item:hover svg{ transform:translateY(-2px); }
+  .badge{
+    position:absolute; top:-6px; right:-9px; background: var(--gold-deep); color:#fff;
+    font-size:9.5px; font-weight:600; width:16px; height:16px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+  }
+
+  /* ===== page ===== */
+  .page{ padding:36px; }
+  h1.title{
+    font-family:'Cormorant Garamond', serif;
+    font-weight:700; font-size:40px;
+    margin-bottom:26px;
+    position:relative; display:inline-block; padding-bottom:10px;
+  }
+  h1.title::after{
+    content:''; position:absolute; left:0; bottom:0; width:54px; height:2px; background:var(--gold);
+  }
+
+  .layout{
+    display:grid;
+    grid-template-columns: 1fr 360px;
+    gap:26px;
+    align-items:start;
+  }
+
+  /* ===== cart items ===== */
+  .items{ display:flex; flex-direction:column; gap:18px; }
+
+  .item{
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:18px;
+    display:flex; gap:20px;
+    box-shadow:0 16px 32px -24px rgba(42,36,32,0.3);
+    opacity:0; transform:translateY(16px);
+    animation: rise 0.55s ease forwards;
+    transition: box-shadow 0.3s ease, transform 0.4s ease, opacity 0.4s ease, margin 0.4s ease, padding 0.4s ease, max-height 0.4s ease;
+    overflow:hidden;
+  }
+  @keyframes rise{ to{ opacity:1; transform:translateY(0); } }
+
+  .item.removing{
+    opacity:0;
+    transform: translateX(40px) scale(0.97);
+    max-height:0; padding-top:0; padding-bottom:0; margin-bottom:-18px; border-width:0;
+  }
+
+  .thumb{
+    width:160px; height:160px; flex-shrink:0;
+    border-radius:10px; overflow:hidden;
+    background:#eef3f0;
+  }
+  .thumb img{ width:100%; height:100%; object-fit:cover; transition:transform 0.5s ease; }
+  .item:hover .thumb img{ transform:scale(1.06); }
+
+  .item-body{ flex:1; display:flex; flex-direction:column; }
+  .item-top{ display:flex; align-items:flex-start; justify-content:space-between; }
+  .item-top h2{
+    font-family:'Cormorant Garamond', serif;
+    font-weight:600; font-size:21px; letter-spacing:0.02em;
+  }
+  .tags{ display:flex; gap:6px; }
+  .tag{
+    font-size:10.5px; font-weight:600; letter-spacing:0.03em;
+    padding:4px 10px; border-radius:999px;
+  }
+  .tag.ava{ background:#E5F2E8; color:#3E7A53; }
+  .tag.vjd{ background:#EAF0FA; color:#3B5A9A; }
+
+  .sku{ font-size:12px; color:var(--ink-soft); margin:4px 0 14px; }
+
+  .meta-grid{
+    display:flex; gap:36px; flex-wrap:wrap;
+    margin-bottom:16px;
+  }
+  .meta{ font-size:13px; }
+  .meta .k{ color:var(--ink-soft); }
+  .meta .v{ font-weight:500; color: var(--gold-deep); }
+
+  .item-bottom{
+    margin-top:auto;
+    display:flex; align-items:center; justify-content:space-between;
+  }
+  .price{
+    font-family:'Cormorant Garamond', serif;
+    font-size:25px; font-weight:700; color:var(--ink);
+  }
+  .remove-btn{
+    background: var(--red-bg);
+    color: var(--red);
+    border:none; border-radius:999px;
+    padding:8px 18px;
+    font-size:12.5px; font-weight:500;
+    cursor:pointer;
+    transition: background 0.2s ease, color 0.2s ease, transform 0.15s ease;
+    display:flex; align-items:center; gap:6px;
+  }
+  .remove-btn:hover{ background:var(--red); color:#fff; transform:translateY(-1px); }
+  .remove-btn svg{ width:13px; height:13px; }
+
+  /* ===== summary ===== */
+  .summary{
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:24px;
+    box-shadow:0 16px 32px -24px rgba(42,36,32,0.3);
+    position:sticky; top:90px;
+    opacity:0; transform:translateY(16px);
+    animation: rise 0.6s ease 0.1s forwards;
+  }
+  .summary-head{
+    display:flex; align-items:center; justify-content:space-between;
+    margin-bottom:10px;
+  }
+  .summary-head h3{
+    font-family:'Cormorant Garamond', serif; font-size:21px; font-weight:600;
+  }
+  .add-icon{
+    width:28px; height:28px; border-radius:50%;
+    border:1px solid var(--line);
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer; color:var(--ink-soft);
+    transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease, border-color 0.2s ease;
+  }
+  .add-icon:hover{ background:var(--emerald); color:#fff; border-color:var(--emerald); transform:rotate(90deg); }
+  .add-icon svg{ width:14px; height:14px; }
+
+  .warn{
+    color:var(--red);
+    font-size:13px; font-weight:500;
+    margin-bottom:18px;
+    display:flex; align-items:center; gap:7px;
+  }
+  .warn svg{ width:15px; height:15px; flex-shrink:0; }
+
+  .hr{ height:1px; background:var(--line); margin:18px 0; }
+
+  .srow{
+    display:flex; justify-content:space-between;
+    font-size:13.5px; color:var(--ink-soft);
+    padding:6px 0;
+  }
+  .srow.total{
+    font-family:'Cormorant Garamond', serif;
+    font-size:23px; font-weight:700; color:var(--ink);
+    border-top:1px solid var(--line);
+    margin-top:6px; padding-top:14px;
+  }
+  .srow.total .v{ color:var(--gold-deep); }
+
+  .confirm-btn{
+    width:100%; margin-top:20px;
+    border:none; border-radius:10px;
+    padding:16px;
+    background: linear-gradient(100deg, var(--emerald), var(--emerald-deep));
+    color:#F4EFE6;
+    font-family:'Jost', sans-serif;
+    font-size:13.5px; font-weight:600; letter-spacing:0.08em; text-transform:uppercase;
+    cursor:pointer;
+    position:relative; overflow:hidden;
+    transition: transform 0.15s ease, box-shadow 0.25s ease, opacity 0.2s ease;
+    box-shadow:0 16px 30px -16px rgba(43,62,52,0.55);
+  }
+  .confirm-btn:hover{ transform:translateY(-2px); box-shadow:0 20px 36px -14px rgba(184,146,79,0.45); }
+  .confirm-btn:active{ transform:translateY(0) scale(0.99); }
+  .confirm-btn::before{
+    content:''; position:absolute; top:0; left:-60%; width:35%; height:100%;
+    background: linear-gradient(120deg, transparent, rgba(255,255,255,0.35), transparent);
+    transform: skewX(-20deg);
+    animation: shimmer 3.4s ease-in-out infinite;
+  }
+  @keyframes shimmer{ 0%{ left:-60%; } 50%{ left:130%; } 100%{ left:130%; } }
+
+  .empty{
+    text-align:center;
+    padding:60px 20px;
+    color:var(--ink-soft);
+    font-family:'Cormorant Garamond', serif;
+    font-size:22px;
+    display:none;
+  }
+
+  @media (max-width: 920px){
+    .layout{ grid-template-columns:1fr; }
+    .summary{ position:static; }
+    .item{ flex-direction:column; }
+    .thumb{ width:100%; height:200px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand"><span class="mark">IC</span> Instore Catalogue</div>
+  <div class="search">
+    <input type="text" placeholder="Search Product…">
+    <button aria-label="search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 12h13M14 6l6 6-6 6"/></svg></button>
+  </div>
+  <nav class="actions">
+    <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="3.2"/><path d="M5 20c1.2-4 4-6 7-6s5.8 2 7 6"/></svg>DKN</a>
+    <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="20" r="1.3"/><circle cx="18" cy="20" r="1.3"/><path d="M2 3h2l2.4 12.2a2 2 0 0 0 2 1.6h8.6a2 2 0 0 0 2-1.6L21 7H6"/></svg>Cart<span class="badge" id="cartBadge">1</span></a>
+    <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 8 12 3 3 8l9 5 9-5Z"/><path d="M3 8v8l9 5 9-5V8"/><path d="M12 13v8"/></svg>Orders</a>
+    <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg>Logout</a>
+  </nav>
+</header>
+
+<div class="page">
+  <h1 class="title">Shopping Cart</h1>
+
+  <div class="layout">
+    <div class="items" id="itemsList">
+      <div class="item" id="item-1">
+        <div class="thumb">
+          <img src="https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?q=80&w=500&auto=format&fit=crop" alt="Casting with stones bangle">
+        </div>
+        <div class="item-body">
+          <div class="item-top">
+            <h2>Casting With Stones</h2>
+            <div class="tags">
+              <span class="tag ava">Ava</span>
+              <span class="tag vjd">VJD</span>
+            </div>
+          </div>
+          <div class="sku">43042027</div>
+          <div class="meta-grid">
+            <div class="meta"><span class="k">Metal Rate: </span><span class="v">₹5,000.00</span></div>
+            <div class="meta"><span class="k">Gross weight: </span><span class="v">16.41 g</span></div>
+            <div class="meta"><span class="k">Net Weight: </span><span class="v">15.15 g</span></div>
+            <div class="meta"><span class="k">Purity: </span><span class="v">18K</span></div>
+            <div class="meta"><span class="k">Quantity: </span><span class="v">1</span></div>
+          </div>
+          <div class="item-bottom">
+            <div class="price">₹1,04,674.00</div>
+            <button class="remove-btn" onclick="removeItem('item-1')">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>
+              Remove
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="empty" id="emptyState">Your cart is empty.</div>
+
+    <div class="summary">
+      <div class="summary-head">
+        <h3>Customer details</h3>
+        <div class="add-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+        </div>
+      </div>
+      <div class="warn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v5"/><circle cx="12" cy="16" r="0.5" fill="currentColor"/></svg>
+        Please add your address
+      </div>
+
+      <div class="hr"></div>
+
+      <div class="srow"><span>GST Amount</span><span>₹3,049.00</span></div>
+      <div class="srow total"><span>Total</span><span class="v" id="totalAmt">₹1,04,674.00</span></div>
+
+      <button class="confirm-btn">Confirm Order</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  function removeItem(id){
+    const el = document.getElementById(id);
+    el.classList.add('removing');
+    setTimeout(()=>{
+      el.remove();
+      const remaining = document.querySelectorAll('.item').length;
+      document.getElementById('cartBadge').textContent = remaining;
+      if(remaining === 0){
+        document.getElementById('emptyState').style.display = 'block';
+        document.getElementById('totalAmt').textContent = '₹0.00';
+      }
+    }, 420);
+  }
+</script>
+
+</body>
+</html>

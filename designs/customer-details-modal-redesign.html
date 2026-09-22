@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Customer Details — Instore Catalogue</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Jost:wght@300;400;500;600&display=swap');
+
+  :root{
+    --cream:#FBF7F1;
+    --paper:#FFFFFF;
+    --ink:#2A2420;
+    --ink-soft:#6B5F55;
+    --gold:#B8924F;
+    --gold-deep:#8C6B33;
+    --emerald:#3C5448;
+    --emerald-deep:#2B3E34;
+    --line: rgba(42,36,32,0.12);
+    --red:#C25450;
+  }
+
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{
+    min-height:100vh;
+    background:var(--cream);
+    font-family:'Jost', sans-serif;
+    color:var(--ink);
+    -webkit-font-smoothing:antialiased;
+  }
+
+  /* fake page behind the modal, to suggest context */
+  .backdrop-page{
+    position:fixed; inset:0;
+    background:
+      linear-gradient(135deg, #cfe0d8 0%, #fbf7f1 35%, #d9e8f0 100%);
+    filter: blur(4px) saturate(1.05);
+    opacity:0.7;
+  }
+
+  .scrim{
+    position:fixed; inset:0;
+    background: rgba(42,36,32,0.38);
+    backdrop-filter: blur(2px);
+    display:flex; align-items:center; justify-content:center;
+    z-index:10;
+  }
+
+  .modal{
+    width:460px;
+    max-width:92vw;
+    background: var(--paper);
+    border-radius:18px;
+    padding:34px 34px 30px;
+    box-shadow: 0 40px 80px -30px rgba(42,36,32,0.5);
+    position:relative;
+    opacity:0;
+    transform: translateY(22px) scale(0.96);
+    animation: modalIn 0.5s cubic-bezier(.2,.8,.2,1) forwards;
+  }
+  @keyframes modalIn{
+    to{ opacity:1; transform:translateY(0) scale(1); }
+  }
+
+  .modal-head{
+    display:flex; align-items:center; justify-content:space-between;
+    margin-bottom:26px;
+  }
+  .modal-head h1{
+    font-family:'Cormorant Garamond', serif;
+    font-weight:700; font-size:27px;
+    position:relative; padding-bottom:8px;
+  }
+  .modal-head h1::after{
+    content:''; position:absolute; left:0; bottom:0; width:42px; height:2px; background:var(--gold);
+  }
+  .close-btn{
+    width:32px; height:32px; border-radius:50%;
+    border:1px solid var(--line);
+    background:transparent;
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer; color:var(--ink-soft);
+    transition: background 0.2s ease, color 0.2s ease, transform 0.25s ease;
+  }
+  .close-btn:hover{ background:var(--ink); color:#fff; transform:rotate(90deg); }
+  .close-btn svg{ width:14px; height:14px; }
+
+  .field{
+    position:relative;
+    margin-bottom:16px;
+  }
+  .field input, .field select{
+    width:100%;
+    background: rgba(184,146,79,0.045);
+    border:1px solid var(--line);
+    border-radius:9px;
+    padding:17px 14px 7px;
+    color:var(--ink);
+    font-family:'Jost', sans-serif;
+    font-size:14px;
+    outline:none;
+    appearance:none;
+    transition: border-color 0.25s ease, background 0.25s ease, box-shadow 0.25s ease;
+  }
+  .field textarea{
+    width:100%;
+    min-height:54px;
+    resize:none;
+    background: rgba(184,146,79,0.045);
+    border:1px solid var(--line);
+    border-radius:9px;
+    padding:17px 14px 7px;
+    color:var(--ink);
+    font-family:'Jost', sans-serif;
+    font-size:14px;
+    outline:none;
+    transition: border-color 0.25s ease, background 0.25s ease, box-shadow 0.25s ease;
+  }
+  .field input:focus, .field select:focus, .field textarea:focus{
+    border-color: var(--gold);
+    background: rgba(184,146,79,0.08);
+    box-shadow: 0 0 0 3px rgba(184,146,79,0.12);
+  }
+  .field label{
+    position:absolute;
+    left:14px; top:14.5px;
+    color:var(--ink-soft);
+    font-size:13.5px;
+    pointer-events:none;
+    transition: all 0.18s ease;
+    background:transparent;
+  }
+  .field input:focus + label,
+  .field input:not(:placeholder-shown) + label,
+  .field textarea:focus + label,
+  .field textarea:not(:placeholder-shown) + label{
+    top:6px; font-size:10px;
+    letter-spacing:0.05em; text-transform:uppercase;
+    color: var(--gold-deep);
+    font-family:'Jost', sans-serif;
+    font-weight:500;
+  }
+  .field select{ color:var(--ink); cursor:pointer; }
+  .field .chev{
+    position:absolute; right:14px; top:50%; transform:translateY(-50%);
+    width:11px; height:11px; pointer-events:none; color:var(--ink-soft);
+  }
+
+  .field.error input{
+    border-color: var(--red);
+    background: rgba(194,84,80,0.06);
+    animation: shake 0.4s ease;
+  }
+  @keyframes shake{
+    0%,100%{ transform:translateX(0); }
+    25%{ transform:translateX(-5px); }
+    75%{ transform:translateX(5px); }
+  }
+  .error-msg{
+    color: var(--red);
+    font-size:12.5px;
+    margin: -10px 0 14px 2px;
+    display:flex; align-items:center; gap:6px;
+    opacity:0;
+    max-height:0;
+    overflow:hidden;
+    transition: opacity 0.25s ease, max-height 0.25s ease, margin 0.25s ease;
+  }
+  .error-msg.show{
+    opacity:1; max-height:30px; margin: -10px 0 14px 2px;
+  }
+  .error-msg svg{ width:13px; height:13px; flex-shrink:0; }
+
+  .row2{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:14px;
+  }
+
+  .save-btn{
+    width:100%;
+    margin-top:8px;
+    border:none; border-radius:10px;
+    padding:15px;
+    background: linear-gradient(100deg, var(--emerald), var(--emerald-deep));
+    color:#F4EFE6;
+    font-family:'Jost', sans-serif;
+    font-size:14px; font-weight:600; letter-spacing:0.06em;
+    cursor:pointer;
+    position:relative; overflow:hidden;
+    transition: transform 0.15s ease, box-shadow 0.25s ease;
+    box-shadow: 0 16px 30px -16px rgba(43,62,52,0.55);
+  }
+  .save-btn:hover{ transform:translateY(-2px); box-shadow:0 20px 36px -14px rgba(184,146,79,0.45); }
+  .save-btn:active{ transform:translateY(0) scale(0.99); }
+  .save-btn::before{
+    content:''; position:absolute; top:0; left:-60%; width:35%; height:100%;
+    background: linear-gradient(120deg, transparent, rgba(255,255,255,0.35), transparent);
+    transform: skewX(-20deg);
+    animation: shimmer 3.4s ease-in-out infinite;
+  }
+  @keyframes shimmer{ 0%{ left:-60%; } 50%{ left:130%; } 100%{ left:130%; } }
+</style>
+</head>
+<body>
+
+<div class="backdrop-page"></div>
+
+<div class="scrim">
+  <div class="modal">
+    <div class="modal-head">
+      <h1>Customer Details</h1>
+      <button class="close-btn" aria-label="close">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>
+      </button>
+    </div>
+
+    <form id="custForm">
+      <div class="field error" id="phoneField">
+        <input type="tel" id="phone" placeholder=" " value="98765432" maxlength="10">
+        <label for="phone">Phone</label>
+      </div>
+      <div class="error-msg show" id="phoneError">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v5"/><circle cx="12" cy="16" r="0.5" fill="currentColor"/></svg>
+        Please enter 10-digit valid number
+      </div>
+
+      <div class="field">
+        <input type="text" id="name" placeholder=" ">
+        <label for="name">Name</label>
+      </div>
+
+      <div class="field">
+        <textarea id="addr1" placeholder=" " rows="1"></textarea>
+        <label for="addr1">Address 1</label>
+      </div>
+
+      <div class="field">
+        <textarea id="addr2" placeholder=" " rows="1"></textarea>
+        <label for="addr2">Address 2</label>
+      </div>
+
+      <div class="row2">
+        <div class="field">
+          <input type="text" id="city" placeholder=" ">
+          <label for="city">City</label>
+        </div>
+        <div class="field">
+          <input type="text" id="pin" placeholder=" " maxlength="6">
+          <label for="pin">Pin Code</label>
+        </div>
+      </div>
+
+      <div class="row2">
+        <div class="field">
+          <select id="state">
+            <option value="" disabled>Select</option>
+            <option selected>Karnataka</option>
+            <option>Maharashtra</option>
+            <option>Tamil Nadu</option>
+            <option>Telangana</option>
+            <option>Delhi</option>
+          </select>
+          <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>
+        </div>
+        <div class="field">
+          <input type="text" id="country" placeholder=" " value="India">
+          <label for="country">Country</label>
+        </div>
+      </div>
+
+      <button type="submit" class="save-btn">Save</button>
+    </form>
+  </div>
+</div>
+
+<script>
+  const phone = document.getElementById('phone');
+  const phoneField = document.getElementById('phoneField');
+  const phoneError = document.getElementById('phoneError');
+
+  function validatePhone(){
+    const valid = /^[0-9]{10}$/.test(phone.value.trim());
+    phoneField.classList.toggle('error', !valid);
+    phoneError.classList.toggle('show', !valid);
+    return valid;
+  }
+  phone.addEventListener('input', validatePhone);
+  validatePhone();
+
+  document.getElementById('custForm').addEventListener('submit', function(e){
+    e.preventDefault();
+    if(!validatePhone()){
+      phoneField.classList.remove('error');
+      void phoneField.offsetWidth;
+      phoneField.classList.add('error');
+      phone.focus();
+      return;
+    }
+    const btn = document.querySelector('.save-btn');
+    const original = btn.textContent;
+    btn.textContent = 'Saved ✓';
+    setTimeout(()=>{ btn.textContent = original; }, 1500);
+  });
+
+  document.querySelector('.close-btn').addEventListener('click', function(){
+    const modal = document.querySelector('.modal');
+    modal.style.transition = 'opacity 0.25s ease, transform 0.25s ease';
+    modal.style.opacity = '0';
+    modal.style.transform = 'translateY(14px) scale(0.97)';
+  });
+</script>
+
+</body>
+</html>

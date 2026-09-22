@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bangles — Instore Catalogue</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Marcellus&family=Jost:wght@300;400;500;600&display=swap');
+
+  :root{
+    --cream:#FBF7F1;
+    --paper:#FFFFFF;
+    --ink:#2A2420;
+    --ink-soft:#6B5F55;
+    --gold:#B8924F;
+    --gold-deep:#8C6B33;
+    --emerald:#3C5448;
+    --emerald-deep:#2B3E34;
+    --line: rgba(42,36,32,0.1);
+  }
+
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{
+    background:var(--cream);
+    color:var(--ink);
+    font-family:'Jost', sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  /* ===== header (shared) ===== */
+  header{
+    position:sticky; top:0; z-index:50;
+    background: var(--paper);
+    border-bottom:1px solid var(--line);
+    display:flex; align-items:center; justify-content:space-between;
+    padding:16px 36px;
+  }
+  .brand{
+    font-family:'Marcellus', serif;
+    font-size:20px;
+    letter-spacing:0.04em;
+    display:flex; align-items:center; gap:10px;
+  }
+  .brand .mark{
+    width:30px; height:30px;
+    border-radius:50%;
+    background: conic-gradient(from 180deg, var(--gold), #E9C77B, var(--gold-deep), var(--gold));
+    display:flex; align-items:center; justify-content:center;
+    color:var(--paper);
+    font-family:'Marcellus', serif;
+    font-size:13px;
+  }
+  .search{ flex:1; max-width:420px; margin:0 40px; position:relative; }
+  .search input{
+    width:100%; padding:11px 44px 11px 18px; border-radius:999px;
+    border:1px solid var(--line); background:var(--cream);
+    font-size:13.5px; color:var(--ink); outline:none;
+    transition: border-color 0.25s ease, box-shadow 0.25s ease;
+  }
+  .search input:focus{ border-color: var(--gold); box-shadow: 0 0 0 3px rgba(184,146,79,0.12); }
+  .search button{
+    position:absolute; right:5px; top:50%; transform:translateY(-50%);
+    width:32px; height:32px; border:none; border-radius:50%;
+    background: var(--emerald); color:#fff; cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+    transition: background 0.2s ease, transform 0.2s ease;
+  }
+  .search button:hover{ background:var(--gold-deep); transform:translateY(-50%) scale(1.06); }
+  .search svg{ width:14px; height:14px; }
+  nav.actions{ display:flex; align-items:center; gap:26px; }
+  .nav-item{
+    display:flex; flex-direction:column; align-items:center; gap:4px;
+    position:relative; color:var(--ink-soft); text-decoration:none;
+    font-size:11px; letter-spacing:0.03em; cursor:pointer;
+    transition: color 0.2s ease;
+  }
+  .nav-item:hover{ color:var(--gold-deep); }
+  .nav-item svg{ width:19px; height:19px; stroke:currentColor; transition:transform 0.2s ease; }
+  .nav-item:hover svg{ transform:translateY(-2px); }
+  .badge{
+    position:absolute; top:-6px; right:-9px; background: var(--gold-deep); color:#fff;
+    font-size:9.5px; font-weight:600; width:16px; height:16px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+  }
+
+  /* ===== breadcrumb ===== */
+  .breadcrumb-wrap{ padding:18px 36px 0; }
+  .breadcrumb{
+    display:inline-flex; align-items:center; gap:7px;
+    background:var(--paper); border:1px solid var(--line);
+    padding:8px 16px; border-radius:999px;
+    font-size:12.5px; color:var(--ink-soft);
+  }
+  .breadcrumb svg{ width:13px; height:13px; }
+  .breadcrumb .sep{ color:var(--line); }
+  .breadcrumb .current{ color:var(--gold-deep); font-weight:500; }
+
+  /* ===== page head ===== */
+  .page-head{
+    padding:22px 36px 4px;
+    display:flex; align-items:flex-end; justify-content:space-between;
+  }
+  .page-head h1{
+    font-family:'Cormorant Garamond', serif;
+    font-weight:700; font-size:34px;
+    position:relative; padding-bottom:8px;
+  }
+  .page-head h1::after{
+    content:''; position:absolute; left:0; bottom:0; width:42px; height:2px; background:var(--gold);
+  }
+  .total{ font-size:13px; color:var(--ink-soft); }
+  .total b{ color:var(--ink); font-weight:600; }
+
+  /* ===== filters ===== */
+  .filters{
+    margin:22px 36px 0;
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:18px 22px;
+    display:flex; flex-wrap:wrap; gap:18px 22px;
+    align-items:flex-end;
+    box-shadow:0 14px 30px -22px rgba(42,36,32,0.25);
+  }
+  .f-group{ display:flex; flex-direction:column; gap:6px; }
+  .f-group label{
+    font-size:11px; letter-spacing:0.06em; text-transform:uppercase;
+    color:var(--ink-soft); font-weight:500;
+  }
+  .f-group select, .f-group input{
+    font-family:'Jost', sans-serif;
+    border:1px solid var(--line);
+    background:var(--cream);
+    border-radius:8px;
+    padding:8px 12px;
+    font-size:13px;
+    color:var(--ink);
+    outline:none;
+    min-width:96px;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+  .f-group select:focus, .f-group input:focus{
+    border-color:var(--gold); box-shadow:0 0 0 3px rgba(184,146,79,0.12);
+  }
+  .range{ display:flex; align-items:center; gap:6px; }
+  .range input{ width:70px; }
+  .range span{ color:var(--ink-soft); font-size:12px; }
+  .clear{
+    display:flex; align-items:center; gap:6px;
+    color:var(--gold-deep); font-size:13px; font-weight:500;
+    background:none; border:none; cursor:pointer;
+    padding:8px 4px;
+    transition: transform 0.2s ease, opacity 0.2s ease;
+  }
+  .clear:hover{ opacity:0.7; }
+  .clear svg{ width:14px; height:14px; transition:transform 0.4s ease; }
+  .clear:hover svg{ transform:rotate(-90deg); }
+
+  /* ===== product grid ===== */
+  .section{ padding:30px 36px 70px; }
+  .grid{
+    display:grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap:26px;
+  }
+  .card{
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-radius:14px;
+    overflow:hidden;
+    text-decoration:none;
+    color:var(--ink);
+    display:flex; flex-direction:column;
+    opacity:0; transform:translateY(18px);
+    animation: rise 0.55s ease forwards;
+    transition: box-shadow 0.3s ease, transform 0.3s ease, border-color 0.3s ease;
+  }
+  .card:nth-child(1){ animation-delay:0.03s; } .card:nth-child(2){ animation-delay:0.07s; }
+  .card:nth-child(3){ animation-delay:0.11s; } .card:nth-child(4){ animation-delay:0.15s; }
+  .card:nth-child(5){ animation-delay:0.19s; } .card:nth-child(6){ animation-delay:0.23s; }
+  .card:nth-child(7){ animation-delay:0.27s; } .card:nth-child(8){ animation-delay:0.31s; }
+  @keyframes rise{ to{ opacity:1; transform:translateY(0); } }
+
+  .card:hover{
+    transform: translateY(-6px);
+    box-shadow:0 26px 44px -22px rgba(184,146,79,0.4);
+    border-color: rgba(184,146,79,0.4);
+  }
+
+  .thumb{
+    position:relative;
+    aspect-ratio:1/1;
+    background: linear-gradient(135deg,#fafafa,#f1efe9);
+    overflow:hidden;
+  }
+  .thumb img{
+    width:100%; height:100%; object-fit:contain;
+    padding:14px;
+    transition: transform 0.5s cubic-bezier(.2,.8,.2,1);
+  }
+  .card:hover .thumb img{ transform: scale(1.08); }
+
+  .quick{
+    position:absolute; left:0; right:0; bottom:-44px;
+    height:38px;
+    background: var(--emerald);
+    color:#F4EFE6;
+    display:flex; align-items:center; justify-content:center;
+    font-size:11.5px; letter-spacing:0.08em; text-transform:uppercase;
+    transition: bottom 0.3s ease;
+  }
+  .card:hover .quick{ bottom:0; }
+
+  .new-tag{
+    position:absolute; top:10px; left:10px;
+    background: var(--gold);
+    color:#fff;
+    font-size:10px; font-weight:600; letter-spacing:0.04em;
+    padding:3px 9px; border-radius:999px;
+  }
+
+  .info{ padding:14px 16px 16px; }
+  .info .name{
+    font-size:11.5px; letter-spacing:0.04em; text-transform:uppercase;
+    color:var(--ink-soft); margin-bottom:6px;
+  }
+  .info .price{
+    font-family:'Cormorant Garamond', serif;
+    font-size:21px; font-weight:600; color:var(--ink);
+  }
+  .info .price small{
+    font-family:'Jost', sans-serif;
+    font-size:11px; font-weight:400; color:var(--ink-soft);
+    margin-left:6px;
+  }
+
+  @media (max-width: 1000px){
+    .grid{ grid-template-columns: repeat(2,1fr); }
+    .filters{ flex-direction:column; align-items:stretch; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand"><span class="mark">IC</span> Instore Catalogue</div>
+  <div class="search">
+    <input type="text" placeholder="Search Product…">
+    <button aria-label="search">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 12h13M14 6l6 6-6 6"/></svg>
+    </button>
+  </div>
+  <nav class="actions">
+    <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="3.2"/><path d="M5 20c1.2-4 4-6 7-6s5.8 2 7 6"/></svg>DKN</a>
+    <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="20" r="1.3"/><circle cx="18" cy="20" r="1.3"/><path d="M2 3h2l2.4 12.2a2 2 0 0 0 2 1.6h8.6a2 2 0 0 0 2-1.6L21 7H6"/></svg>Cart<span class="badge">8</span></a>
+    <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 8 12 3 3 8l9 5 9-5Z"/><path d="M3 8v8l9 5 9-5V8"/><path d="M12 13v8"/></svg>Orders</a>
+    <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg>Logout</a>
+  </nav>
+</header>
+
+<div class="breadcrumb-wrap">
+  <div class="breadcrumb">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/></svg>
+    Home <span class="sep">›</span> <span class="current">Bangles</span>
+  </div>
+</div>
+
+<div class="page-head">
+  <h1>Bangles</h1>
+  <div class="total">Total Products: <b>7,651</b></div>
+</div>
+
+<div class="filters">
+  <div class="f-group">
+    <label>Category</label>
+    <select><option>Bangles</option></select>
+  </div>
+  <div class="f-group">
+    <label>Branch</label>
+    <select><option>All</option></select>
+  </div>
+  <div class="f-group">
+    <label>Stock</label>
+    <select><option>All</option></select>
+  </div>
+  <div class="f-group">
+    <label>Purity</label>
+    <select><option>All</option></select>
+  </div>
+  <div class="f-group">
+    <label>GS Code</label>
+    <select><option>All</option></select>
+  </div>
+  <div class="f-group">
+    <label>Price</label>
+    <select><option>All</option></select>
+  </div>
+  <div class="f-group">
+    <label>Gender</label>
+    <select><option>All</option></select>
+  </div>
+  <div class="f-group">
+    <label>Weight</label>
+    <select><option>All</option></select>
+  </div>
+  <div class="f-group">
+    <label>Weight (g)</label>
+    <div class="range">
+      <input type="text" placeholder="Min"><span>–</span><input type="text" placeholder="Max">
+    </div>
+  </div>
+  <div class="f-group">
+    <label>Carat</label>
+    <div class="range">
+      <input type="text" placeholder="Min"><span>–</span><input type="text" placeholder="Max">
+    </div>
+  </div>
+  <button class="clear">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M3 12a9 9 0 1 1 3 6.7"/><path d="M3 3v6h6"/></svg>
+    Clear Filters
+  </button>
+</div>
+
+<section class="section">
+  <div class="grid">
+
+    <a class="card" href="#">
+      <div class="thumb">
+        <img src="https://images.unsplash.com/photo-1611591437281-460bfbe1220a?q=80&w=600&auto=format&fit=crop" alt="Punjabi Kada">
+        <div class="quick">Quick View</div>
+      </div>
+      <div class="info">
+        <div class="name">Punjabi Kada</div>
+        <div class="price">₹1,71,152<small>.79</small></div>
+      </div>
+    </a>
+
+    <a class="card" href="#">
+      <div class="thumb">
+        <img src="https://images.unsplash.com/photo-1611652022419-a9419f74343d?q=80&w=600&auto=format&fit=crop" alt="Kanas">
+        <div class="quick">Quick View</div>
+      </div>
+      <div class="info">
+        <div class="name">Kanas</div>
+        <div class="price">₹1,92,777<small>.38</small></div>
+      </div>
+    </a>
+
+    <a class="card" href="#">
+      <div class="thumb">
+        <span class="new-tag">New</span>
+        <img src="https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?q=80&w=600&auto=format&fit=crop" alt="Casting with stones">
+        <div class="quick">Quick View</div>
+      </div>
+      <div class="info">
+        <div class="name">Casting With Stones</div>
+        <div class="price">₹1,04,674<small>.00</small></div>
+      </div>
+    </a>
+
+    <a class="card" href="#">
+      <div class="thumb">
+        <img src="https://images.unsplash.com/photo-1605100804763-247f67b3557e?q=80&w=600&auto=format&fit=crop" alt="Casting with stones navy">
+        <div class="quick">Quick View</div>
+      </div>
+      <div class="info">
+        <div class="name">Casting With Stones</div>
+        <div class="price">₹60,317<small>.00</small></div>
+      </div>
+    </a>
+
+    <a class="card" href="#">
+      <div class="thumb">
+        <img src="https://images.unsplash.com/photo-1599459183200-59c7687a0275?q=80&w=600&auto=format&fit=crop" alt="Anklet">
+        <div class="quick">Quick View</div>
+      </div>
+      <div class="info">
+        <div class="name">Anklet Chain</div>
+        <div class="price">₹38,210<small>.50</small></div>
+      </div>
+    </a>
+
+    <a class="card" href="#">
+      <div class="thumb">
+        <img src="https://images.unsplash.com/photo-1630019852942-f89202989a59?q=80&w=600&auto=format&fit=crop" alt="Floral bracelet">
+        <div class="quick">Quick View</div>
+      </div>
+      <div class="info">
+        <div class="name">Floral Bracelet</div>
+        <div class="price">₹52,940<small>.00</small></div>
+      </div>
+    </a>
+
+    <a class="card" href="#">
+      <div class="thumb">
+        <img src="https://images.unsplash.com/photo-1610375461246-83df859d849d?q=80&w=600&auto=format&fit=crop" alt="Diamond bangle">
+        <div class="quick">Quick View</div>
+      </div>
+      <div class="info">
+        <div class="name">Diamond Bangle</div>
+        <div class="price">₹2,14,880<small>.00</small></div>
+      </div>
+    </a>
+
+    <a class="card" href="#">
+      <div class="thumb">
+        <span class="new-tag">New</span>
+        <img src="https://images.unsplash.com/photo-1610694955371-d4a3e0ce0e3c?q=80&w=600&auto=format&fit=crop" alt="Navy strap bangle">
+        <div class="quick">Quick View</div>
+      </div>
+      <div class="info">
+        <div class="name">Designer Strap Bangle</div>
+        <div class="price">₹84,560<small>.00</small></div>
+      </div>
+    </a>
+
+  </div>
+</section>
+
+</body>
+</html>

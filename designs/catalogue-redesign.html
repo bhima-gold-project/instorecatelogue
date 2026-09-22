@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Instore Catalogue</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Marcellus&family=Jost:wght@300;400;500;600&display=swap');
+
+  :root{
+    --cream:#FBF7F1;
+    --paper:#FFFFFF;
+    --ink:#2A2420;
+    --ink-soft:#6B5F55;
+    --gold:#B8924F;
+    --gold-deep:#8C6B33;
+    --emerald:#3C5448;
+    --emerald-deep:#2B3E34;
+    --line: rgba(42,36,32,0.1);
+  }
+
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--cream);
+    color:var(--ink);
+    font-family:'Jost', sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  /* ===== Top bar ===== */
+  header{
+    position:sticky; top:0; z-index:50;
+    background: var(--paper);
+    border-bottom:1px solid var(--line);
+    display:flex; align-items:center; justify-content:space-between;
+    padding:16px 36px;
+  }
+  .brand{
+    font-family:'Marcellus', serif;
+    font-size:20px;
+    letter-spacing:0.04em;
+    color:var(--ink);
+    display:flex; align-items:center; gap:10px;
+  }
+  .brand .mark{
+    width:30px; height:30px;
+    border-radius:50%;
+    background: conic-gradient(from 180deg, var(--gold), #E9C77B, var(--gold-deep), var(--gold));
+    display:flex; align-items:center; justify-content:center;
+    color:var(--paper);
+    font-family:'Marcellus', serif;
+    font-size:13px;
+  }
+
+  .search{
+    flex:1;
+    max-width:420px;
+    margin:0 40px;
+    position:relative;
+  }
+  .search input{
+    width:100%;
+    padding:11px 44px 11px 18px;
+    border-radius:999px;
+    border:1px solid var(--line);
+    background:var(--cream);
+    font-family:'Jost', sans-serif;
+    font-size:13.5px;
+    color:var(--ink);
+    outline:none;
+    transition: border-color 0.25s ease, box-shadow 0.25s ease;
+  }
+  .search input:focus{
+    border-color: var(--gold);
+    box-shadow: 0 0 0 3px rgba(184,146,79,0.12);
+  }
+  .search button{
+    position:absolute; right:5px; top:50%; transform:translateY(-50%);
+    width:32px; height:32px;
+    border:none; border-radius:50%;
+    background: var(--emerald);
+    color:#fff;
+    cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+    transition: background 0.2s ease, transform 0.2s ease;
+  }
+  .search button:hover{ background:var(--gold-deep); transform:translateY(-50%) scale(1.06); }
+  .search svg{ width:14px; height:14px; }
+
+  nav.actions{
+    display:flex; align-items:center; gap:26px;
+  }
+  .nav-item{
+    display:flex; flex-direction:column; align-items:center; gap:4px;
+    position:relative;
+    color:var(--ink-soft);
+    text-decoration:none;
+    font-size:11px;
+    letter-spacing:0.03em;
+    cursor:pointer;
+    transition: color 0.2s ease;
+  }
+  .nav-item:hover{ color:var(--gold-deep); }
+  .nav-item svg{ width:19px; height:19px; stroke:currentColor; transition:transform 0.2s ease; }
+  .nav-item:hover svg{ transform:translateY(-2px); }
+  .badge{
+    position:absolute; top:-6px; right:-9px;
+    background: var(--gold-deep);
+    color:#fff;
+    font-size:9.5px;
+    font-weight:600;
+    width:16px; height:16px;
+    border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+  }
+
+  /* ===== Hero ===== */
+  .hero-wrap{
+    padding:28px 36px 0;
+  }
+  .hero{
+    position:relative;
+    height:420px;
+    border-radius:18px;
+    overflow:hidden;
+    display:flex;
+    box-shadow:0 24px 50px -28px rgba(43,62,52,0.45);
+  }
+  .hero img{
+    width:62%; height:100%; object-fit:cover;
+    object-position: top center;
+    filter:saturate(1.03);
+  }
+  .hero-copy{
+    flex:1;
+    background: linear-gradient(135deg, var(--emerald) 0%, var(--emerald-deep) 100%);
+    position:relative;
+    color:#F4EFE6;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    text-align:center;
+    padding:30px;
+    overflow:hidden;
+  }
+  .hero-copy::before{
+    content:'';
+    position:absolute; inset:0;
+    background:
+      radial-gradient(circle at 20% 20%, rgba(255,255,255,0.06), transparent 40%),
+      radial-gradient(circle at 80% 80%, rgba(255,255,255,0.05), transparent 45%);
+  }
+  .hero-copy h1{
+    font-family:'Cormorant Garamond', serif;
+    font-weight:500;
+    font-size:46px;
+    line-height:1.12;
+    position:relative;
+    opacity:0;
+    animation: rise 0.9s ease 0.2s forwards;
+  }
+  .stars{
+    margin:18px 0;
+    letter-spacing:8px;
+    font-size:12px;
+    color:var(--gold);
+    opacity:0;
+    animation: rise 0.9s ease 0.45s forwards;
+  }
+  .hero-copy p{
+    font-family:'Cormorant Garamond', serif;
+    font-size:19px;
+    line-height:1.5;
+    max-width:280px;
+    color:#D9D4C7;
+    opacity:0;
+    animation: rise 0.9s ease 0.6s forwards;
+  }
+  @keyframes rise{
+    from{ opacity:0; transform:translateY(16px); }
+    to{ opacity:1; transform:translateY(0); }
+  }
+  .hero-cta{
+    margin-top:24px;
+    padding:11px 30px;
+    border-radius:999px;
+    border:1px solid rgba(244,239,230,0.5);
+    color:#F4EFE6;
+    background:transparent;
+    font-family:'Jost', sans-serif;
+    font-size:12px;
+    letter-spacing:0.12em;
+    text-transform:uppercase;
+    cursor:pointer;
+    transition: background 0.25s ease, color 0.25s ease, transform 0.2s ease;
+    opacity:0;
+    animation: rise 0.9s ease 0.75s forwards;
+  }
+  .hero-cta:hover{
+    background: var(--gold);
+    color: var(--emerald-deep);
+    border-color: var(--gold);
+    transform:translateY(-2px);
+  }
+  .dots{
+    position:absolute; bottom:18px; left:50%; transform:translateX(-50%);
+    display:flex; gap:7px;
+  }
+  .dots span{
+    width:6px; height:6px; border-radius:50%;
+    background:rgba(255,255,255,0.35);
+  }
+  .dots span.active{ background:#fff; width:18px; border-radius:4px; transition:all 0.3s ease; }
+
+  /* ===== Categories ===== */
+  .section{
+    padding:48px 36px 70px;
+  }
+  .section-head{
+    display:flex; align-items:baseline; justify-content:space-between;
+    margin-bottom:28px;
+  }
+  .section-head h2{
+    font-family:'Cormorant Garamond', serif;
+    font-weight:600;
+    font-size:32px;
+    color:var(--ink);
+    position:relative;
+    padding-bottom:10px;
+  }
+  .section-head h2::after{
+    content:'';
+    position:absolute; left:0; bottom:0;
+    width:46px; height:2px;
+    background: var(--gold);
+  }
+  .section-head a{
+    font-size:12.5px;
+    letter-spacing:0.06em;
+    color:var(--ink-soft);
+    text-decoration:none;
+    border-bottom:1px solid var(--line);
+    padding-bottom:2px;
+    transition: color 0.2s ease, border-color 0.2s ease;
+  }
+  .section-head a:hover{ color:var(--gold-deep); border-color:var(--gold-deep); }
+
+  .grid{
+    display:grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap:26px;
+  }
+  .cat-card{
+    text-decoration:none;
+    color:var(--ink);
+    text-align:center;
+    opacity:0;
+    transform:translateY(18px);
+    animation: rise 0.6s ease forwards;
+  }
+  .cat-card:nth-child(1){ animation-delay:0.05s; }
+  .cat-card:nth-child(2){ animation-delay:0.1s; }
+  .cat-card:nth-child(3){ animation-delay:0.15s; }
+  .cat-card:nth-child(4){ animation-delay:0.2s; }
+  .cat-card:nth-child(5){ animation-delay:0.25s; }
+  .cat-card:nth-child(6){ animation-delay:0.3s; }
+  .cat-card:nth-child(7){ animation-delay:0.35s; }
+  .cat-card:nth-child(8){ animation-delay:0.4s; }
+
+  .thumb{
+    position:relative;
+    aspect-ratio:1/1;
+    border-radius:14px;
+    overflow:hidden;
+    background:#11161a;
+    margin-bottom:14px;
+    box-shadow:0 14px 30px -16px rgba(42,36,32,0.35);
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
+  }
+  .thumb img{
+    width:100%; height:100%; object-fit:cover;
+    transition: transform 0.55s cubic-bezier(.2,.8,.2,1);
+  }
+  .thumb::after{
+    content:'';
+    position:absolute; inset:0;
+    background: linear-gradient(180deg, transparent 55%, rgba(0,0,0,0.28) 100%);
+    opacity:0;
+    transition: opacity 0.3s ease;
+  }
+  .cat-card:hover .thumb{
+    transform: translateY(-6px);
+    box-shadow:0 22px 40px -16px rgba(184,146,79,0.45);
+  }
+  .cat-card:hover .thumb img{ transform: scale(1.08); }
+  .cat-card:hover .thumb::after{ opacity:1; }
+
+  .cat-card span{
+    font-family:'Cormorant Garamond', serif;
+    font-size:17px;
+    font-weight:600;
+    letter-spacing:0.02em;
+    color:var(--ink);
+    transition: color 0.2s ease;
+  }
+  .cat-card:hover span{ color:var(--gold-deep); }
+
+  @media (max-width: 1000px){
+    .grid{ grid-template-columns: repeat(2,1fr); }
+    .hero{ flex-direction:column; height:auto; }
+    .hero img{ width:100%; height:240px; }
+    .hero-copy{ padding:34px 20px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand"><span class="mark">IC</span> Instore Catalogue</div>
+
+  <div class="search">
+    <input type="text" placeholder="Search Product…">
+    <button aria-label="search">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 12h13M14 6l6 6-6 6"/></svg>
+    </button>
+  </div>
+
+  <nav class="actions">
+    <a class="nav-item" href="#">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="3.2"/><path d="M5 20c1.2-4 4-6 7-6s5.8 2 7 6"/></svg>
+      DKN
+    </a>
+    <a class="nav-item" href="#">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="20" r="1.3"/><circle cx="18" cy="20" r="1.3"/><path d="M2 3h2l2.4 12.2a2 2 0 0 0 2 1.6h8.6a2 2 0 0 0 2-1.6L21 7H6"/></svg>
+      Cart
+      <span class="badge">8</span>
+    </a>
+    <a class="nav-item" href="#">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 8 12 3 3 8l9 5 9-5Z"/><path d="M3 8v8l9 5 9-5V8"/><path d="M12 13v8"/></svg>
+      Orders
+    </a>
+    <a class="nav-item" href="#">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg>
+      Logout
+    </a>
+  </nav>
+</header>
+
+<div class="hero-wrap">
+  <div class="hero">
+    <img src="https://images.unsplash.com/photo-1610694955371-d4a3e0ce0e3c?q=80&w=1200&auto=format&fit=crop" alt="Bridal jewelry models">
+    <div class="hero-copy">
+      <h1>Happy Moments,<br>Timeless Creations.</h1>
+      <div class="stars">· · · ✦ ✦ ✦ ✦ · ·</div>
+      <p>Exquisite wedding collection, for those unique moments.</p>
+      <button class="hero-cta">Explore Collection</button>
+      <div class="dots">
+        <span class="active"></span><span></span><span></span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<section class="section">
+  <div class="section-head">
+    <h2>Categories</h2>
+    <a href="#">View all categories</a>
+  </div>
+
+  <div class="grid">
+    <a class="cat-card" href="#">
+      <div class="thumb"><img src="https://images.unsplash.com/photo-1611652022419-a9419f74343d?q=80&w=600&auto=format&fit=crop" alt="Bangles"></div>
+      <span>Bangles</span>
+    </a>
+    <a class="cat-card" href="#">
+      <div class="thumb"><img src="https://images.unsplash.com/photo-1610375461246-83df859d849d?q=80&w=600&auto=format&fit=crop" alt="Coins"></div>
+      <span>Coins</span>
+    </a>
+    <a class="cat-card" href="#">
+      <div class="thumb"><img src="https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?q=80&w=600&auto=format&fit=crop" alt="Articles"></div>
+      <span>Articles</span>
+    </a>
+    <a class="cat-card" href="#">
+      <div class="thumb"><img src="https://images.unsplash.com/photo-1611591437281-460bfbe1220a?q=80&w=600&auto=format&fit=crop" alt="Pendant Set"></div>
+      <span>Pendant Set</span>
+    </a>
+    <a class="cat-card" href="#">
+      <div class="thumb"><img src="https://images.unsplash.com/photo-1611652022419-a9419f74343d?q=80&w=600&auto=format&fit=crop" alt="Necklace"></div>
+      <span>Necklace</span>
+    </a>
+    <a class="cat-card" href="#">
+      <div class="thumb"><img src="https://images.unsplash.com/photo-1630019852942-f89202989a59?q=80&w=600&auto=format&fit=crop" alt="Earrings"></div>
+      <span>Earrings</span>
+    </a>
+    <a class="cat-card" href="#">
+      <div class="thumb"><img src="https://images.unsplash.com/photo-1605100804763-247f67b3557e?q=80&w=600&auto=format&fit=crop" alt="Jhumkas"></div>
+      <span>Jhumkas</span>
+    </a>
+    <a class="cat-card" href="#">
+      <div class="thumb"><img src="https://images.unsplash.com/photo-1599459183200-59c7687a0275?q=80&w=600&auto=format&fit=crop" alt="Earrings Studs"></div>
+      <span>Studs</span>
+    </a>
+  </div>
+</section>
+
+<script>
+  const dots = document.querySelectorAll('.dots span');
+  let i = 0;
+  setInterval(()=>{
+    dots[i].classList.remove('active');
+    i = (i+1) % dots.length;
+    dots[i].classList.add('active');
+  }, 2800);
+</script>
+
+</body>
+</html>
